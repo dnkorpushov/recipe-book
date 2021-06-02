@@ -3,10 +3,9 @@
 {% block content %}
 
     <h1>Все метки</h1>
-    <!-- <ul> -->
-        {% for tag in tag_list %}
+
+    {% for tag in tag_list %}
         <a  style="margin-right: 0.3em;" href="{{ url_for('view_tag', tag=tag['tag']) }}">{{ tag['tag'] }}({{ tag['qty'] }})</span></a>
-        {% endfor %}
-    <!-- </ul> -->
+    {% endfor %}
 
 {% endblock %}
