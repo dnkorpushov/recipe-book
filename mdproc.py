@@ -1,7 +1,12 @@
 import markdown
 from markdown import extensions
-from lxml import etree
 import re
+
+
+def remove_html_tags(text):
+
+    clean = re.compile('<.*?>')
+    return re.sub(clean, '', text)
 
 
 def get_html(mdfile):   
@@ -38,7 +43,7 @@ def get_display_html(mdfile):
         for tag in meta['tags']:
             tags_line = tags_line  + ' ' + '<a class="tag" href="/tag/{0}">#{0}</a>'.format(tag)
 
-        display_html = html[:pos] + '<div class="tags">' + tags_line + "</div>" + html[pos:] + '<br/><br/><br/><br/>'
+        display_html = html[:pos] + '<pre class="tags">' + tags_line + "</pre>" + html[pos:] + '<br/><br/><br/><br/>'
     else:
         display_html = html
     
@@ -48,8 +53,6 @@ def get_display_html(mdfile):
 def get_text(mdfile):
 
     html, meta = get_html(mdfile)
-    html = '<html>{}</html>'.format(html)
-    tree = etree.fromstring(html, parser=etree.HTMLParser(recover=True))
-    text = etree.tostring(tree, method='text', encoding='utf-8').decode('utf-8').strip()
+    text = remove_html_tags(html)
 
     return text, meta

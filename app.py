@@ -14,6 +14,7 @@ import recipedb
 
 app = Flask(__name__)
 
+SITE_TITLE = config.SITE_TITLE
 
 def get_db():
 
@@ -49,7 +50,7 @@ def close_connection(exception):
 @app.route('/')
 def index():
 
-    page_title = config.SITE_TITLE
+    page_title = SITE_TITLE
     with app.app_context():
         db = get_db()
         last_recipes = recipedb.get_last_recipes(db, 10)
@@ -77,33 +78,35 @@ def reindex():
 
 @app.route('/recipes')
 def view_recipelist():
-
+    page_title = 'Список рецептов' + ' | ' + SITE_TITLE
     with app.app_context():
         db = get_db()
         recipe_list = recipedb.get_recipes(db)
 
-    return render_template('recipelist.html', title='Список рецептов', recipe_list=recipe_list)    
+    return render_template('recipelist.html', title='Список рецептов', recipe_list=recipe_list,
+                            page_title=page_title)    
 
 
 @app.route('/recipe/<rowid>')
 def view_recipe(rowid):
- 
+    
     with app.app_context():
         db = get_db()
         mdfile = recipedb.get_recipe(db, rowid)
         html, meta = mdproc.get_display_html(mdfile)
+        page_title = meta['title'] + ' | ' + SITE_TITLE
         
-    return render_template('recipe.html', recipe=html)
+    return render_template('recipe.html', recipe=html, page_title=page_title)
 
 
 @app.route('/tags')
 def view_taglist():
-
+    page_title = 'Все метки' + ' | ' + SITE_TITLE
     with app.app_context():
         db = get_db()
         tag_list = recipedb.get_taglist(db)
     
-    return render_template('taglist.html', tag_list=tag_list)
+    return render_template('taglist.html', tag_list=tag_list, page_title=page_title)
 
 
 @app.route('/tag/<tag>', defaults={'title': None})
@@ -115,8 +118,10 @@ def view_tag(tag, title):
         recipe_list = recipedb.get_recipes_for_tag(db, tag)
         if title is None:
             title = 'Метка: {}'.format(tag)
+        page_title = title + ' | ' + SITE_TITLE
     
-    return render_template('recipelist.html', title=title, recipe_list=recipe_list)
+    return render_template('recipelist.html', title=title, recipe_list=recipe_list,
+                            page_title=page_title)
 
 
 @app.route('/search', methods=['GET', 'POST'])
@@ -128,6 +133,8 @@ def search():
     with app.app_context():
         db = get_db()
         recipe_list = recipedb.search(db, search_str)
+    title = 'Поиск: {}'.format(search_str)
+    page_title = title + ' | ' + SITE_TITLE
     
-    return render_template('recipelist.html', title='Поиск: {}'.format(search_str), 
-                            recipe_list=recipe_list)
+    return render_template('recipelist.html', title=title, recipe_list=recipe_list,
+                            page_title=page_title)

@@ -1,3 +1,3 @@
 SITE_TITLE = 'RecipeBook'
-DATABASE = '/work/recipe-book/recipes.db'
-CONTENT_ROOT = 'C:/Users/dnkor/Documents/рецепты'
+DATABASE = '/Users/dnk/work/recipe-book/recipes.db'
+CONTENT_ROOT = '/Users/dnk/work/recipes'
