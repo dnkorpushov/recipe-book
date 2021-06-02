@@ -19,7 +19,6 @@ def get_html(mdfile):
             break
 
     if 'tags' in meta.keys():
-        print(meta['tags'])
         meta['tags'] = [x.strip() for x in meta['tags'][0].split(',')]
     else:
         raise Exception('Error: no tags metadata in {}'.format(mdfile))

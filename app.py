@@ -49,13 +49,14 @@ def close_connection(exception):
 @app.route('/')
 def index():
 
+    page_title = config.SITE_TITLE
     with app.app_context():
         db = get_db()
         last_recipes = recipedb.get_last_recipes(db, 10)
         tag_list_popular = recipedb.get_taglist_popular(db, 15)
 
     return render_template('index.html', tag_list_popular=tag_list_popular, 
-                            last_recipes=last_recipes)
+                            last_recipes=last_recipes, page_title=page_title)
 
 
 @app.route('/reindex')
