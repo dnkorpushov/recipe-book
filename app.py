@@ -3,7 +3,9 @@ import fnmatch
 import os
 from sqlite3.dbapi2 import DateFromTicks
 
-from flask import Flask, redirect
+import git
+
+from flask import Flask, redirect, request, abort
 from flask import render_template
 from flask import g
 from flask.globals import request
@@ -12,9 +14,13 @@ import config
 import mdproc
 import recipedb
 
+from reindex import reindex
+
+
 app = Flask(__name__)
 
 SITE_TITLE = config.SITE_TITLE
+
 
 def get_db():
 
@@ -28,15 +34,6 @@ def get_db():
     db.row_factory = make_dicts
 
     return db
-
-
-def init_db():
-
-    with app.app_context():
-        db = get_db()
-        with app.open_resource('schema.sql', mode='r') as f:
-            db.cursor().executescript(f.read())
-        db.commit()
 
 
 @app.teardown_appcontext
@@ -60,20 +57,19 @@ def index():
                             last_recipes=last_recipes, page_title=page_title)
 
 
-@app.route('/reindex')
-def reindex():
+@app.route('/contentupdate', methods=['POST'])
+def content_update():
+    try:
+        payload = request.get_json()
+        print(payload)
+        repo = git.cmd.Git(config.CONTENT_ROOT)
+        repo.pull()
+        reindex()
+    except Exception as e:
+        print(e)
+        abort(400)
 
-    with app.app_context():
-        db = get_db()
-        recipedb.empty(db)
-        for root, dirnames, filenames in os.walk(config.CONTENT_ROOT):
-            for filename in fnmatch.filter(filenames, '*.md'):
-                if not filename.startswith('__'):
-                    mdfile = os.path.join(root, filename)
-                    _, meta = mdproc.get_html(mdfile)
-                    recipedb.add_recipe(db, mdfile=mdfile, meta=meta)
-
-    return redirect('/')
+    return 'Ok'
 
 
 @app.route('/recipes')
@@ -138,3 +134,8 @@ def search():
     
     return render_template('recipelist.html', title=title, recipe_list=recipe_list,
                             page_title=page_title)
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0')
+

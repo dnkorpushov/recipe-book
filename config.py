@@ -1,3 +1,3 @@
 SITE_TITLE = 'RecipeBook'
-DATABASE = '/Users/dnk/work/recipe-book/recipes.db'
-CONTENT_ROOT = '/Users/dnk/work/recipes'
+DATABASE = '/home/pi/recipe-book/recipes.db'
+CONTENT_ROOT = '/home/pi/recipes'

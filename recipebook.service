@@ -1,0 +1,6 @@
+[Unit]
+Description=uWSGI instance to serve RecipeBook
+After=network.target
+
+[Service]
+User=
