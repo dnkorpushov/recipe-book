@@ -3,4 +3,12 @@ Description=uWSGI instance to serve RecipeBook
 After=network.target
 
 [Service]
-User=
+User=www-data
+Group=www-data
+
+WorkingDirectory=/var/lib/recipebook
+ExecStart=/usr/local/bin/uwsgi --ini recipebook.ini
+
+[Install]
+WantedBy=multi-user.target
+

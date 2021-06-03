@@ -61,7 +61,6 @@ def index():
 def content_update():
     try:
         payload = request.get_json()
-        print(payload)
         repo = git.cmd.Git(config.CONTENT_ROOT)
         repo.pull()
         reindex()
@@ -80,18 +79,18 @@ def view_recipelist():
         recipe_list = recipedb.get_recipes(db)
 
     return render_template('recipelist.html', title='Список рецептов', recipe_list=recipe_list,
-                            page_title=page_title)    
+                            page_title=page_title)
 
 
 @app.route('/recipe/<rowid>')
 def view_recipe(rowid):
-    
+
     with app.app_context():
         db = get_db()
         mdfile = recipedb.get_recipe(db, rowid)
         html, meta = mdproc.get_display_html(mdfile)
         page_title = meta['title'] + ' | ' + SITE_TITLE
-        
+
     return render_template('recipe.html', recipe=html, page_title=page_title)
 
 
@@ -101,7 +100,7 @@ def view_taglist():
     with app.app_context():
         db = get_db()
         tag_list = recipedb.get_taglist(db)
-    
+
     return render_template('taglist.html', tag_list=tag_list, page_title=page_title)
 
 
@@ -115,7 +114,7 @@ def view_tag(tag, title):
         if title is None:
             title = 'Метка: {}'.format(tag)
         page_title = title + ' | ' + SITE_TITLE
-    
+
     return render_template('recipelist.html', title=title, recipe_list=recipe_list,
                             page_title=page_title)
 
@@ -131,7 +130,7 @@ def search():
         recipe_list = recipedb.search(db, search_str)
     title = 'Поиск: {}'.format(search_str)
     page_title = title + ' | ' + SITE_TITLE
-    
+
     return render_template('recipelist.html', title=title, recipe_list=recipe_list,
                             page_title=page_title)
 
